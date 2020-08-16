@@ -3,6 +3,9 @@
     --textColor: #9f9f9f;
     --firstWordColor: #dfdfdf;
 }
+*{
+    box-sizing: border-box;
+}
 body{
     background-color: var(--blockBg);
 }
@@ -20,9 +23,93 @@ header span.title{
     text-align: center;
     color: var(--firstWordColor);
 }
+#topNav{
+    margin-left: auto;
+    margin-right: 20px;
+}
+#topNav ul{
+    margin: auto;
+    color: var(--firstWordColor);
+    font-weight: bold;
+    font-size: 16px;
+    list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+#topNav ul li{
+    padding: 5px 10px;
+    cursor: pointer;
+}
+#topNav ul li:hover{
+    border-bottom: 1px solid var(--firstWordColor);
+    border-top: 1px solid var(--firstWordColor);
+    margin: -1px 0;
+}
 .filmPage{
     display: block;
     width: 100%;
+}
+.newFilmsBlock{
+    /* /* width: 100%; */
+    position: relative;
+    height: 200px;
+}
+.listContainer{
+    padding: 20px;
+    height: 200px;
+    width: calc(100% - 20px);
+    position: absolute;
+    left: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.leftArrList,.rightArrList{
+    color: var(--firstWordColor);
+    font-size: 16px;
+    position: absolute;
+    top: calc(50% - 8px);
+    background-color: #4445464d;
+    padding: 10px;
+    line-height: 16px;
+    text-align: center;
+    height: 36px;
+    width: 36px;
+    border-radius: 18px;
+    cursor: pointer;
+    opacity: .7;
+}
+.rightArrList{
+    right: 0px;
+}
+.leftArrList{
+    left: 0px;
+}
+.leftArrList:hover,.rightArrList:hover{
+    opacity: 1;
+}
+.listContainer ul{
+    position: absolute;
+    padding: 0;
+    left: 0;
+    transition: left .2s;
+}
+.listContainer ul li{
+    display: inline-block;
+    width: 105px;
+    overflow: hidden;
+    margin: 0 5px;
+    text-align: center;
+    cursor: pointer;
+}
+.listContainer ul li:first-of-type{
+    margin-left: 0;
+}
+.listContainer ul li:last-of-type{
+    margin-right: 0;
+}
+.listContainer ul li>img{
+    height: 160px;
 }
 .listBlock{
     display: flex;
@@ -90,7 +177,7 @@ header span.title{
     justify-content: center;
     width: 100%;
 }
-.pageTabs span{
+.pageTabs button{
     display: block;
     background-color: #1f2123;
     border: 1px solid #333;
@@ -103,8 +190,11 @@ header span.title{
     text-align: center;
     cursor: pointer;
 }
-.pageTabs span:hover{
+.pageTabs button:hover{
     background-color: #444546;
+}
+.pageTabs button.emptyTab:hover{
+    background-color: #1f2123;
 }
 .block{
     position: absolute;
@@ -113,7 +203,7 @@ header span.title{
     width: 100vw;
     height: 100%;
     display: block;
-    z-index: 999;
+    z-index: 1010;
 }
 .blockBg{
     position: fixed;
