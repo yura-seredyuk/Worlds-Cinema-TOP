@@ -1,6 +1,5 @@
 const filmPage = document.createElement('div');
 	filmPage.classList.add('filmPage');
-
 	document.querySelector('main').insertAdjacentElement('afterbegin',filmPage);
 const listBlock = document.createElement('div');
 	listBlock.classList.add('listBlock');
@@ -11,15 +10,175 @@ const bestFilmList = document.createElement('select');
 const select = document.createElement('select');
 	select.classList.add('id-list','form-control');
 	document.querySelector('.listBlock').append(select);
+const newFilmsBlock = document.createElement('div');
+	newFilmsBlock.classList.add('newFilmsBlock');
+	document.querySelector('.filmPage').insertAdjacentElement('afterbegin',newFilmsBlock);
 let page = 1, listId = 232;
 
 let counter = -1;
 
+let navArr = [
+	['Фильмы',{listTypeId:7,subListId:322}],
+	['Сериалы',{listTypeId:5,subListId:253}],
+	['Мультфильмы',{listTypeId:5,subListId:61}],
+	['Документалки',{listTypeId:5,subListId:65}],
+	['ТОП 250',{listTypeId:5,subListId:58}]
+]
+
+class TopNav{
+	constructor(titleArr){
+		this.list = document.createElement('ul');
+		this.titleArr = titleArr;
+		for(let el of this.titleArr){
+			let li = document.createElement('li');
+				li.textContent = el[0].toUpperCase();
+				for(let key in el[1]){
+					li.setAttribute('data-'+key,el[1][key])
+				}
+			this.list.append(li);
+		}
+		document.querySelector('nav#topNav').append(this.list);
+		this.list.addEventListener('click',(event)=>{
+			if(event.target.tagName === 'LI'){
+				this.open(event.target.dataset.listtypeid,event.target.dataset.sublistid)
+			}
+		})
+	}
+	open(listTypeId,subListId){
+		console.log(listTypeId);
+		console.log(subListId);
+		let ind;
+		let $mainList = document.querySelectorAll('.best-film-list option');
+		for(ind = 0; ind<$mainList.length; ind++){
+			if($mainList[ind].dataset.list == listTypeId) break;
+		}
+		$mainList[ind].selected = true;
+		let eventMain = new Event('change',{
+		});
+		document.querySelector('.best-film-list').dispatchEvent(eventMain);
+		console.log(eventMain)
+		// console.log(ind);
+		setTimeout(() => {
+			let eventSub = new Event('change');
+			let $subList = document.querySelectorAll('.id-list option');
+		for(ind = 0; ind<$subList.length; ind++){
+			if(+$subList[ind].dataset.listId == subListId) break;
+		}
+		$subList[ind].selected = true;
+		document.querySelector('.id-list').dispatchEvent(eventSub);
+		console.log(eventSub);
+		}, listTypeId == 7 || subListId == 58? 100: 500);
+		
+		
+		// console.log(ind);
+	}
+}
+
+function topListCreate(){
+	let topList = new TopNav(navArr)
+}
+
+class NewFilms{
+	constructor(selector,options){
+		this.bl = document.querySelector(selector);
+		let listContainer = document.createElement('div');
+			listContainer.classList.add('listContainer');
+		this.list = document.createElement('ul');
+		this.data = options.options;
+		this.list.style.width = 115 * this.data.length - 10 + 'px';
+		for (let i = 0; i < this.data.length; i++) {
+			let li = document.createElement('li');
+			li.innerHTML=`<img src="${this.data[i].posterUrlPreview}" alt="${this.data[i].nameRu}" data-filmId="${this.data[i].filmId}">`
+			this.list.append(li);
+		}
+		this.leftArr = document.createElement('span');
+		this.leftArr.classList.add('leftArrList')
+		this.leftArr.innerHTML = '<i class="fas fa-chevron-left"></i>';
+		this.rightArr = document.createElement('span');
+		this.rightArr.classList.add('rightArrList')
+		this.rightArr.innerHTML = '<i class="fas fa-chevron-right"></i>';
+		listContainer.append(this.list,this.leftArr,this.rightArr);
+		this.bl.append(listContainer);
+		let ulWidth = 115 * this.data.length - 10;
+		let contWidth = document.querySelector('.listContainer').getBoundingClientRect().width;
+		let itemWidth = document.querySelector('.listContainer ul li').getBoundingClientRect().width + 10;
+		let leftHidePart = 0;
+		this.rightArr.addEventListener('click',(event)=>{
+			leftHidePart<=-(ulWidth-contWidth)?leftHidePart = -(ulWidth-contWidth):leftHidePart -=itemWidth;
+			if(leftHidePart<=-(ulWidth-contWidth)) leftHidePart = -(ulWidth-contWidth);
+			this.list.style.left = leftHidePart + 'px';
+		})
+		this.leftArr.addEventListener('click',(event)=>{
+			leftHidePart>0?leftHidePart = 0:leftHidePart +=itemWidth;
+			if(leftHidePart>=0) leftHidePart = 0;
+			this.list.style.left = leftHidePart + 'px';
+		})
+		this.list.addEventListener('click',(event)=>{
+			if(event.target.tagName == 'IMG'){
+				let filmId = event.target.dataset.filmid;
+				this.open(filmId)
+				setTimeout(()=>{
+					this.addVideo(filmId)
+				},150)
+			}
+		})
+	}
+	async open(filmId){
+		let url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/${filmId}`;
+		console.log(url)
+		fetch(url, {
+			"method": "GET",
+			"headers": {
+				"accept": "application/json",
+				"X-API-KEY": "94112792-b13e-429a-a756-505e5ab8ce22"
+			}
+		})
+		.then((response) => {
+			return response.json();
+		})
+		.then((promise)=>{
+			return promise.data
+		})
+		.then(filmInfo => {
+			let inf = new FilmInfo({
+				info: filmInfo
+			})
+		})
+		.catch(function(err) {
+			console.log(err);
+		});		
+	}
+	async addVideo(filmId){
+		let url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/${filmId}/videos`;
+		fetch(url, {
+			"method": "GET",
+			"headers": {
+				"accept": "application/json",
+				"X-API-KEY": "94112792-b13e-429a-a756-505e5ab8ce22"
+			}
+		})
+		.then((response) => {
+			return response.json();
+		})
+		.then((promise)=>{
+			return promise.trailers
+		})
+		.then(video => {
+			if(video.length>0){
+				let trail = new Video_Container({
+					videos: video
+				})
+			}
+		})
+		.catch(function(err) {
+			console.log(err);
+		});
+	}
+}
 
 class FilmPage{
 	constructor(selector,pagesCount,options){
 		counter ++;
-		console.log(counter)
 		this.el = document.querySelector(selector);
 		this.itemsGrid = document.createElement('div');
 		this.itemsGrid.classList.add('itemsGrid');
@@ -45,7 +204,6 @@ class FilmPage{
 		this.el.insertAdjacentElement('beforeend',this.itemsGrid);
 		this.filmId = -1;
 		this.el.addEventListener('click',event =>{
-			console.log(counter)
 			if((event.target.classList.contains('film-item') || event.target.classList.contains('film-item-poster')) && counter == 0){
 				counter++;
 				if(event.target.classList.contains('film-item')) {
@@ -63,7 +221,7 @@ class FilmPage{
 			this.pageTabs = document.createElement('div');
 			this.pageTabs.classList.add('pageTabs');
 			for(let i=1; i<=this.pagesCount; i++){
-				let pagesTab = document.createElement('span');
+				let pagesTab = document.createElement('button');
 				pagesTab.textContent = `${i}`;
 				if(i==page) {
 					pagesTab.className = 'activeTab'
@@ -75,16 +233,14 @@ class FilmPage{
 			}
 			this.el.insertAdjacentElement('beforeend',this.pageTabs);
 			let tabArr = document.querySelector('.pageTabs');
-			let buttArr = document.querySelectorAll('.pageTabs span');
+			let buttArr = document.querySelectorAll('.pageTabs button');
 			tabArr.addEventListener('click',event=>{
-				if(event.target.tagName == 'SPAN'){
-					console.log(event.target.textContent);
+				if(event.target.tagName == 'BUTTON'){
 					document.querySelector('.itemsGrid').remove();
 					document.querySelector('.pageTabs').remove();
 					page = +event.target.textContent;
 					loadPage(event.target.textContent,listId);
 					counter = -1;
-					console.log('kkk')
 					this.hideBtn(buttArr);
 				}
 			})
@@ -147,14 +303,14 @@ class FilmPage{
 			if (buttArr[i].classList.contains('emptyTab')){buttArr[i].remove()}
 		}
 		if(page-3>1){
-			let emptyTab = document.createElement('span');
+			let emptyTab = document.createElement('button');
 			emptyTab.textContent = `...`;
 			emptyTab.setAttribute('disabled','disabled');
 			emptyTab.className = 'emptyTab'
 			buttArr[0].after(emptyTab);
 		}
 		if(page+1<this.pagesCount-1){
-			let emptyTab = document.createElement('span');
+			let emptyTab = document.createElement('button');
 			emptyTab.textContent = `...`;
 			emptyTab.setAttribute('disabled','disabled');
 			emptyTab.className = 'emptyTab'
@@ -333,6 +489,28 @@ async function loadListId(list_Id = 1){
 	}
 }
 
+async function loadNewFilmsList(listId=354){
+	try{
+		let url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/top?type=BEST_FILMS_LIST&page=1&listId=${listId}`;
+		let response = await fetch(url, {
+			"method": "GET",
+			"headers": {
+				"accept": "application/json",
+				"X-API-KEY": "94112792-b13e-429a-a756-505e5ab8ce22"
+			}
+		});
+		let promise = await response.json();
+		let filmList = await promise.films;
+		counter = -1;
+		let films = new NewFilms('.newFilmsBlock',{
+			options: filmList
+		})	
+	}
+	catch(err){
+		console.log(err);
+	}
+}
+
 async function loadPage(page = 1, listId = 232){
 	try{
 		let url = `https://kinopoiskapiunofficial.tech/api/v2.1/films/top?type=BEST_FILMS_LIST&page=${page}&listId=${listId}`;
@@ -348,14 +526,15 @@ async function loadPage(page = 1, listId = 232){
 		counter = -1;
 		let films = new FilmPage('.filmPage',promise.pagesCount,{
 			options: filmList
-		})
-		
+		})		
 	}
 	catch(err){
 		console.log(err);
 	}
 }
 
+topListCreate()
 loadLists()
 loadListId()
+loadNewFilmsList()
 // loadPage(1,232)
