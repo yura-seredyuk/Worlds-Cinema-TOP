@@ -66,10 +66,9 @@ class TopNav{
 		}
 		$subList[ind].selected = true;
 		document.querySelector('.id-list').dispatchEvent(eventSub);
+		// loadListId(subListId)
 		console.log(eventSub);
-		}, listTypeId == 7 || subListId == 58? 100: 500);
-		
-		
+		}, 500);
 		// console.log(ind);
 	}
 }

@@ -36,6 +36,7 @@ header span.title{
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
+    padding: 0;
 }
 #topNav ul li{
     padding: 5px 10px;
@@ -45,6 +46,25 @@ header span.title{
     border-bottom: 1px solid var(--firstWordColor);
     border-top: 1px solid var(--firstWordColor);
     margin: -1px 0;
+}
+@media (max-width: 984px){
+    #topNav ul{
+        font-size: 12px;
+    }
+}
+@media (max-width: 768px){
+    header{
+       flex-direction: column;
+       align-items: flex-start;
+    }
+}
+@media (max-width: 490px){
+    body{
+        min-width: 480px;
+    }
+    #topNav ul{
+        font-size: 11px;
+    }
 }
 .filmPage{
     display: block;
@@ -292,6 +312,18 @@ header span.title{
     border-color: #121314;
     box-shadow: 0 1px 4px rgba(0,0,0,.3), 0 0 40px rgba(0,0,0,.1) inset;
 }
+@media (max-width: 720px){
+    .filmInfo{
+        position: absolute;
+        top: 0;
+        left: calc(2.5vw);
+        width: 90vw;
+    }
+    .filmInfo img{
+        width: 99%;
+        clear: both;
+    }
+}
 footer{
     text-align: center;
     display: flex;
@@ -305,4 +337,36 @@ footer p{
     font-size: 20px;
     color: var(--textColor);
     
+}
+footer ul.social li{
+    list-style-type: none;
+    display: inline-block;
+}
+footer ul.social li a{
+    background-image: url('../img/social.png');
+    background-repeat: no-repeat;
+    background-size: auto 96px;
+    width: 32px;
+    text-decoration: none;
+    padding: 0!important;
+    height: 32px;
+    text-align: left;
+    display: block;
+    transition: background-position .5s;
+    text-indent: -999em;
+}
+footer ul.social li.telegram a{
+    background-position: -32px 0;
+}
+footer ul.social li.linkedin a{
+    background-position: -64px 0;
+}
+footer ul.social li.facebook a:hover{
+    background-position: 0 -32px;
+}
+footer ul.social li.telegram a:hover{
+    background-position: -32px -32px;
+}
+footer ul.social li.linkedin a:hover{
+    background-position: -64px -32px;
 }
